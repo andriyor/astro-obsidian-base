@@ -1,9 +1,8 @@
 ---
-// Renders a snapshot made by `astro-obsidian-base` (src/sync.mjs). Usage in .mdx:
+// Renders a snapshot made by `astro-obsidian-base` (src/sync.ts). Usage in .mdx:
 // import costs from '../../data/bases/cloud-providers.json';
 // <ObsidianBase base={costs} view="Cost" />
-type View = { name: string; headers: string[]; rows: unknown[][] };
-type Base = { name: string; views: View[] };
+import type { Base } from './types.ts';
 
 interface Props {
 	base: Base;

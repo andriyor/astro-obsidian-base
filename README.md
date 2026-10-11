@@ -29,7 +29,15 @@ import tools from '../../data/bases/tools.json';
 <ObsidianBase base={tools} view="Cost" />
 ```
 
-Without `view`, the first view is shown. The table breaks out of the text column to the full viewport width and scrolls sideways if it still doesn't fit. Values render as `✓`/`✗` for booleans, numbers with thousands separators, URLs as links.
+Without `view`, the first view is shown. Column headers use the base's `displayName` when set. The table breaks out of the text column to the full viewport width and scrolls sideways if it still doesn't fit. Values render as `✓`/`✗` for booleans, numbers with thousands separators, URLs as links.
+
+## Types
+
+```ts
+import type { Base, View } from 'astro-obsidian-base/types';
+```
+
+The CLI is TypeScript (`src/sync.ts`), run through [tsx](https://tsx.is) because Node doesn't strip types from files inside `node_modules`. `pnpm typecheck` runs `tsc`.
 
 ## Known limits
 

@@ -9,18 +9,33 @@
     "type": "git",
     "url": "git+https://github.com/andriyor/astro-obsidian-base.git"
   },
-  "keywords": ["astro-component", "obsidian", "obsidian-bases"],
+  "keywords": [
+    "astro-component",
+    "obsidian",
+    "obsidian-bases"
+  ],
   "bin": {
-    "astro-obsidian-base": "src/sync.mjs"
+    "astro-obsidian-base": "src/cli.js"
   },
   "exports": {
-    "./ObsidianBase.astro": "./src/ObsidianBase.astro"
+    "./ObsidianBase.astro": "./src/ObsidianBase.astro",
+    "./types": "./src/types.ts"
   },
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "dependencies": {
-    "mdbasequery": "^0.0.2"
+    "mdbasequery": "^0.0.2",
+    "tsx": "^4.23.15"
   },
   "peerDependencies": {
     "astro": ">=4"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "typescript": "^7.0.2"
   }
 }
