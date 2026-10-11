@@ -22,8 +22,8 @@ Re-run it whenever the notes change. Only table views are exported. `[[wikilinks
 ## Render it (.mdx)
 
 ```mdx
-import ObsidianBase from 'astro-obsidian-base/ObsidianBase.astro';
-import tools from '../../data/bases/tools.json';
+import ObsidianBase from "astro-obsidian-base/ObsidianBase.astro";
+import tools from "../../data/bases/tools.json";
 
 <ObsidianBase base={tools} />
 <ObsidianBase base={tools} view="Cost" />
@@ -34,7 +34,7 @@ Without `view`, the first view is shown. Column headers use the base's `displayN
 ## Types
 
 ```ts
-import type { Base, View } from 'astro-obsidian-base/types';
+import type { Base, View } from "astro-obsidian-base/types";
 ```
 
 The CLI is TypeScript (`src/sync.ts`), run through [tsx](https://tsx.is) because Node doesn't strip types from files inside `node_modules`. `pnpm typecheck` runs `tsc`.
