@@ -1,0 +1,123 @@
+---
+// Renders a snapshot made by `astro-obsidian-base` (src/sync.mjs). Usage in .mdx:
+// import costs from '../../data/bases/cloud-providers.json';
+// <ObsidianBase base={costs} view="Cost" />
+type View = { name: string; headers: string[]; rows: unknown[][] };
+type Base = { name: string; views: View[] };
+
+interface Props {
+	base: Base;
+	view?: string;
+}
+
+const { base, view } = Astro.props;
+const v = view ? base.views.find((x) => x.name === view) : base.views[0];
+if (!v) throw new Error(`Base "${base.name}" has no table view "${view}"`);
+
+const fmt = (x: unknown): string =>
+	x == null
+		? ''
+		: x === true
+			? '✓'
+			: x === false
+				? '✗'
+				: typeof x === 'number'
+					? x.toLocaleString('en-US')
+					: Array.isArray(x)
+						? x.map(fmt).join(', ')
+						: String(x);
+const isUrl = (s: string) => /^https?:\/\/\S+$/.test(s);
+const kind = (x: unknown) => (typeof x === 'number' ? 'num' : typeof x === 'boolean' ? (x ? 'yes' : 'no') : undefined);
+---
+
+<div class="base">
+	<table>
+		<thead>
+			<tr>{v.headers.map((h) => <th>{h.replaceAll('_', ' ')}</th>)}</tr>
+		</thead>
+		<tbody>
+			{
+				v.rows.map((r) => (
+					<tr>
+						{r.map((c) => {
+							const s = fmt(c);
+							return (
+								<td class={kind(c)}>
+									{isUrl(s) ? <a href={s}>{s.replace(/^https?:\/\/(www\.)?(github\.com\/)?/, '').replace(/\/$/, '')}</a> : s}
+								</td>
+							);
+						})}
+					</tr>
+				))
+			}
+		</tbody>
+	</table>
+</div>
+
+<style>
+	/* Break out of the 720px prose column to the full viewport width. */
+	.base {
+		position: relative;
+		left: 50%;
+		width: calc(100vw - 4rem);
+		transform: translateX(-50%);
+		margin: 2em 0;
+		overflow-x: auto;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 8px;
+		background: #fff;
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 15px;
+		line-height: 1.45;
+	}
+	th,
+	td {
+		padding: 0.6em 0.8em;
+		text-align: left;
+		vertical-align: top;
+		border-bottom: 1px solid rgb(var(--gray-light));
+	}
+	td {
+		min-width: 6em;
+	}
+	td a {
+		overflow-wrap: anywhere;
+	}
+	th {
+		background: rgb(var(--gray-light));
+		color: rgb(var(--black));
+		white-space: nowrap;
+	}
+	tbody tr:nth-child(even) {
+		background: rgba(var(--gray-light), 0.35);
+	}
+	tbody tr:last-child td {
+		border-bottom: none;
+	}
+	td:first-child {
+		font-weight: 700;
+		color: rgb(var(--black));
+		white-space: nowrap;
+		min-width: 0;
+	}
+	td.num {
+		text-align: right;
+		white-space: nowrap;
+		min-width: 0;
+		font-variant-numeric: tabular-nums;
+	}
+	td.yes,
+	td.no {
+		text-align: center;
+		min-width: 0;
+	}
+	td.yes {
+		color: #1a7f37;
+	}
+	td.no {
+		color: rgb(var(--gray));
+	}
+</style>

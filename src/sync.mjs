@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+// Snapshot an Obsidian .base into <out>/<name>.json for <ObsidianBase />.
+// Snapshots are committed, so the site builds without access to the vault.
+// Usage: astro-obsidian-base <vault-dir> <path/in/vault/name.base> [--out src/data/bases]
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+import { parseBaseYaml, queryBase } from 'mdbasequery';
+
+const { positionals, values } = parseArgs({
+	allowPositionals: true,
+	options: { out: { type: 'string', default: 'src/data/bases' } },
+});
+const [vault, basePath] = positionals;
+if (!vault || !basePath) {
+	console.error('usage: astro-obsidian-base <vault-dir> <path/in/vault/name.base> [--out src/data/bases]');
+	process.exit(1);
+}
+
+// ponytail: mdbasequery 0.0.2 reports file.ext as ".md" where Obsidian uses "md"; drop once fixed upstream.
+const yaml = fs.readFileSync(path.join(vault, basePath), 'utf8').replace(/file\.ext\s*==\s*"(\w+)"/g, 'file.ext == ".$1"');
+const spec = parseBaseYaml(yaml);
+
+// Obsidian wikilinks mean nothing on the blog: keep the alias or target text.
+const clean = (v) =>
+	Array.isArray(v)
+		? v.map(clean)
+		: typeof v === 'string'
+			? v.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, target, alias) => alias ?? target)
+			: v;
+
+const views = [];
+for (const v of (spec.views ?? []).filter((v) => v.type === 'table')) {
+	// strict: false so a column no note has yet renders empty instead of failing.
+	const result = await queryBase({ dir: vault, spec, view: v.name, strict: false });
+	views.push({
+		name: v.name,
+		headers: result.columns.map(
+			(c) => spec.properties?.[c]?.displayName ?? (c === 'file.name' ? 'name' : c.replace(/^(note|file)\./, '')),
+		),
+		rows: result.rows.map((r) =>
+			result.columns.map((c) => {
+				const value = clean(r.projected[c]) ?? null;
+				return c === 'file.name' && typeof value === 'string' ? value.replace(/\.md$/, '') : value;
+			}),
+		),
+	});
+}
+
+const name = path.basename(basePath, '.base');
+fs.mkdirSync(values.out, { recursive: true });
+const out = path.join(values.out, `${name}.json`);
+fs.writeFileSync(out, JSON.stringify({ name, views }, null, '\t') + '\n');
+console.log(`${name}: ${views.map((v) => `${v.name} (${v.rows.length})`).join(', ')} -> ${out}`);

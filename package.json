@@ -1,0 +1,26 @@
+{
+  "name": "astro-obsidian-base",
+  "version": "0.1.0",
+  "description": "Render Obsidian Bases (.base) tables in Astro sites from committed snapshots",
+  "type": "module",
+  "license": "MIT",
+  "author": "Andrii Oriekhov <andriyorehov@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andriyor/astro-obsidian-base.git"
+  },
+  "keywords": ["astro-component", "obsidian", "obsidian-bases"],
+  "bin": {
+    "astro-obsidian-base": "src/sync.mjs"
+  },
+  "exports": {
+    "./ObsidianBase.astro": "./src/ObsidianBase.astro"
+  },
+  "files": ["src"],
+  "dependencies": {
+    "mdbasequery": "^0.0.2"
+  },
+  "peerDependencies": {
+    "astro": ">=4"
+  }
+}
