@@ -25,7 +25,7 @@
     "src"
   ],
   "dependencies": {
-    "mdbasequery": "^0.0.2",
+    "mdbasequery": "^0.0.3",
     "tsx": "^4.23.15"
   },
   "peerDependencies": {

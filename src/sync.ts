@@ -19,11 +19,7 @@ if (!vault || !basePath) {
   process.exit(1);
 }
 
-// ponytail: mdbasequery 0.0.2 reports file.ext as ".md" where Obsidian uses "md"; drop once fixed upstream.
-const yaml = fs
-  .readFileSync(path.join(vault, basePath), "utf8")
-  .replace(/file\.ext\s*==\s*"(\w+)"/g, 'file.ext == ".$1"');
-const spec = parseBaseYaml(yaml);
+const spec = parseBaseYaml(fs.readFileSync(path.join(vault, basePath), "utf8"));
 
 // Obsidian wikilinks mean nothing on the blog: keep the alias or target text.
 const clean = (v: unknown): unknown =>
